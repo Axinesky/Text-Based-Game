@@ -1,6 +1,6 @@
 import colorama
 from colorama import Fore, Back, Style
-from dir.slowtext import slow_text
+from dir.slowtext import slow_text_centered
 import time 
 import sys
 import random
@@ -15,22 +15,26 @@ colorama.init() # Initialise colorama incase it bugs out
 
 colour_text_menu = Fore.CYAN + Style.BRIGHT + Back.LIGHTWHITE_EX # Series of settings for the starting menu
 
-def center_text(text):
-     terminal_size = shutil.get_terminal_size()
-     width = terminal_size.columns
-     height = terminal_size.lines
 
-     vertical_term = height // 2 
+def prnt_below(text):
+    terminal_size = shutil.get_terminal_size()
+    width = terminal_size.columns
+    horizontal_padding = (width -len(text)) // 2
+    print(" " * horizontal_padding + text)
 
-     for _ in range(vertical_term):
-        print()
-
-
-     return text.center(width)
-
-print(center_text(colour_text_menu))
+print(slow_text_centered(colour_text_menu))
 
 clear_screen()
 
-slow_text(center_text("Welcome to Hyperia!"), 0.02, 0.3)
-print(slow_text(center_text(("This is a magical world with joy and despair"))))
+slow_text_centered("Welcome to Hyperia", newLine = True, vertical_padding = True)
+slow_text_centered("This is an island with infinite problems with solutions only you can solve!", newLine = True, vertical_padding = False)
+slow_text_centered("Enter play to continue OR quit to exit: ", newLine = True, vertical_padding = False)
+menu_choice = input(">").lower()
+if menu_choice == 'quit':
+    clear_screen()
+    slow_text_centered("Goodbye see you next time!", newLine = True, vertical_padding = True)
+    time.sleep(5)
+    sys.exit()
+elif menu_choice('play'):
+    clear_screen()
+    time.sleep(2000)

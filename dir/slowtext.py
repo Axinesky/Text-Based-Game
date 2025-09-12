@@ -1,8 +1,23 @@
 import sys 
 import time
 import random
+import shutil
 
-def slow_text(text, min_delay=0.02, max_delay=0.3, newLine = False):
+def slow_text_centered(text, min_delay=0.02, max_delay=0.3, newLine = False, vertical_padding=True):
+    terminal_size = shutil.get_terminal_size()
+    width = terminal_size.columns
+    height = terminal_size.lines
+
+
+    if vertical_padding:
+        vertical_term = height // 2
+
+        print("\n" * vertical_term, end="")
+
+    horizontal_padding = (width - len(text)) // 2
+    print(" " * horizontal_padding, end="")
+
+
     for char in text:
         sys.stdout.write(char)
         sys.stdout.flush()
