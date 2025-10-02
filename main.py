@@ -1,9 +1,7 @@
 import colorama
 from colorama import Fore, Back, Style
 from dir.slowtext import slow_text_centered
-import time 
-import sys
-import random
+import time
 import shutil 
 import os 
 
