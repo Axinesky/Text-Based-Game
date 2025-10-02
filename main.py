@@ -30,7 +30,12 @@ slow_text_centered("Welcome to Hyperia", newLine = True, vertical_padding = True
 slow_text_centered("This is an island with infinite problems with solutions only you can solve!", newLine = True, vertical_padding = False)
 slow_text_centered("Enter play to continue OR quit to exit: ", newLine = True, vertical_padding = False)
 menu_choice = input(">").lower()
-if menu_choice == 'quit':
+
+if menu_choice == 'play':
+    clear_screen()
+    print(art)
+    time.sleep(3)
+elif menu_choice == 'exit':
     clear_screen()
     slow_text_centered("Goodbye see you next time!", newLine = True, vertical_padding = True)
     time.sleep(5)
