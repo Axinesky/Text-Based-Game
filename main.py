@@ -141,4 +141,18 @@ menu_text = """
 """
 def menu_screen():
     clear_screen()
-    time.sleep(2000)
+    slow_text_centered(menu_text, min_delay=0.04, max_delay=0.12 ,newLine = False, vertical_padding = True)
+
+slow_text_centered("*poof**", min_delay=0.02, max_delay=0.08, newLine = False, vertical_padding = True)
+
+#fix up in the morning
+
+#user_profile = {
+#    "name": name,
+#    "class": classes.copy(),
+#
+#}
+
+#print(user_profile)
+#def profile():
+#       clear_screen()
