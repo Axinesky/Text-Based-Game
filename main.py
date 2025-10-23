@@ -1,7 +1,7 @@
 import colorama
 from colorama import Fore, Back, Style, Cursor
 from dir.slowtext import slow_text_centered,text_centered_block
-from dir.dicts import enemy
+from dir.dicts import hostile
 import time
 import os
 import sys
@@ -20,7 +20,7 @@ def reset_count():
 # Ascii art
 art = r"""
 
-     ___  ___      ___    ___ ________  _______   ________  ___  ________     
+___  ___      ___    ___ ________  _______   ________  ___  ________     
     │╲  ╲│╲  ╲    │╲  ╲  ╱  ╱│╲   __  ╲│╲  ___ ╲ │╲   __  ╲│╲  ╲│╲   __  ╲    
     ╲ ╲  ╲╲╲  ╲   ╲ ╲  ╲╱  ╱ │ ╲  ╲│╲  ╲ ╲   __╱│╲ ╲  ╲│╲  ╲ ╲  ╲ ╲  ╲│╲  ╲   
      ╲ ╲   __  ╲   ╲ ╲    ╱ ╱ ╲ ╲   ____╲ ╲  ╲_│╱_╲ ╲   _  _╲ ╲  ╲ ╲   __  ╲  
@@ -116,6 +116,8 @@ while True:
     if name == "":
         print("Please enter a name.")
         invalid_attempts += 1
+    if len(name) > 7:
+        print("Over 7 character limit. Please enter a name.")
     else:
         reset_count()
         break
@@ -131,7 +133,8 @@ slow_text_centered(f"So {name} i've heard your quite the fighter", newLine = Tru
 slow_text_centered("Your device activity shows that your into very intensive fights", newLine = True, vertical_padding = False)
 slow_text_centered("Don't worry in Hyperia we have quite the challengers for you", newLine = True, vertical_padding = False)
 slow_text_centered("First off your going to have to pick a class", newLine = True, vertical_padding = False)
-
+time.sleep(2.5)
+clear_screen()
 # Classes dict
 classes = {
 
@@ -176,8 +179,8 @@ slow_text_centered("These are your choices below", min_delay=0.02, max_delay=0.0
 slow_text_centered("Beserker, a combat heavy class with fast attacks, though you will not be wise...", min_delay=0.02, max_delay=0.08, newLine = True, vertical_padding = False)
 slow_text_centered("Mage, filled with magic and knowledge. Mana overflows from you. You will be cursed with a short life...", min_delay=0.02, max_delay=0.08, newLine = True, vertical_padding = False)
 slow_text_centered("Tank, nothing can stop you. You have a heart made of iron and a body made of steel. Though your quite slow...", min_delay=0.02, max_delay=0.08, vertical_padding = False)
-slow_text_centered("ERROR 404: CLASS NOT AVAILABLE FOR /-/=-/ BEEP Challenger you must think out the box for this class", min_delay=0.02, max_delay=0.08, newLine=True, vertical_padding = False)
-slow_text_centered("So challenger what will be your choice?", min_delay=0.02, max_delay=0.08, newLine = True, vertical_padding = False)
+slow_text_centered(f"ERROR 404: CLASS NOT AVAILABLE FOR /-/=-/ BEEP {name} you must think out the box for this class", min_delay=0.02, max_delay=0.08, newLine=True, vertical_padding = False)
+slow_text_centered(f"So {name} what will be your choice?", min_delay=0.02, max_delay=0.08, newLine = True, vertical_padding = False)
 
 # Class validation check
 while True:
@@ -203,7 +206,8 @@ while True:
         break
 
     if player == 'GM':
-        encrypt = input("Who is the GM?: ")
+        slow_text_centered("Who is the GM", min_delay=0.02, max_delay=0.08, newLine = True, vertical_padding = False)
+        encrypt = input(">")
         if encrypt == 'axinesky':
             slow_text_centered("You have obtained the GM class")
             reset_count()
@@ -303,67 +307,109 @@ slow_text_centered("#sorrybro #dealwithit", min_delay=0.02, max_delay=0.08, newL
 time.sleep(4)
 clear_screen()
 
-# This is a health check used in every battle. If player health equals 0 they will need to restart from their game save
-def health_check():
-    if player["health"] == 0:
-        clear_screen()
-        slow_text_centered("You have died. Please restart your game and use your game save", min_delay=0.02, max_delay=0.08, newLine = True, vertical_padding = True)
-
+speedbuff_applied = False
+def health_refresh():
+    global speedbuff_applied
+    player["health"] = copy.deepcopy(classes[user_class]["health"])
+    player["mana"] = copy.deepcopy(classes[user_class]["mana"])
+    speedbuff_applied = False
 
 # This is the main combat system function which handles all buffs and enemy interaction
 # The nice part about this function is that it uses the enemy dict and parses all the stats into here to make it functional !
-def combat_system(enemy, fight_choice):
+
+def combat_system(enemy, fight_choice, enemy_name):
     global invalid_attempts
-    temporary_mana = player["mana"]
-    temporary_agility = player["agility"]
-    temporary_damage = player["damage"]
-    temporary_enemy_health = enemy["health"]
-    speedbuff_applied = False
+    global speedbuff_applied
+    temporary_mana = int(player["mana"])
+    temporary_agility = int(player["agility"])
+    temporary_damage = int(player["damage"])
+    temporary_enemy_health = int(enemy["health"])
+    temporary_player_health = int(player["health"])
+    temporary_enemy_damage = int(enemy["damage"])
+
+
+    # This is a health check used in every battle. If player health equals 0 they will need to restart from their game save
+    def health_check():
+        if temporary_player_health <= 0:
+            clear_screen()
+            slow_text_centered("You have died. Please restart your game and use your game save", min_delay=0.02, max_delay=0.08, newLine=True, vertical_padding=True)
+            close()
+
     if enemy["health"] == 0:
         clear_screen()
         slow_text_centered(f"You have killed {enemy}!", min_delay=0.02, max_delay=0.08, newLine = True, vertical_padding = True)
-    if not speedbuff_applied and player["agility"] > enemy["agility"]:
+    if not speedbuff_applied:
         speedbuff = temporary_agility / 250
         temporary_damage += speedbuff
-        print("You are faster than the enemy you have gained a ", speedbuff, "damage boost!")
+        print(f"You are faster than the enemy! You gained a {speedbuff:.2f} damage boost!")
         speedbuff_applied = True
-
-    if fight_choice == "Attack":
-        enemy["health"] -= temporary_damage
-        clear_screen()
-        slow_text_centered(f"You dealt {temporary_damage} to {enemy}")
-        reset_count()
-    elif fight_choice == "Magicspell":
-        reset_count()
-        if temporary_mana < 20:
-            print("You dont have enough mana it takes 20 per buff")
-        if temporary_mana > 20:
-            buff = temporary_damage  + (player["damage"] * 0.15)
-            temporary_mana -= 20
-            enemy["health"] -= buff
-            print("You dealt ", buff, "damage!", enemy.capitalize(), "currently has ", enemy["health"])
-    elif fight_choice == "Menu":
-        reset_count()
-        menu_screen()
-    else:
-        print("Invalid choice")
-        invalid_attempts += 1
-    if invalid_attempts > MAX_INVALID_ATTEMPTS:
+    while True:
+        if fight_choice == "Attack":
+            temporary_enemy_health -= int(temporary_damage)
             clear_screen()
-            slow_text_centered("I'm not that forgiving restart your game to retry", newLine = True, vertical_padding = True)
-            close()
+            slow_text_centered(f"You dealt {temporary_damage} to {enemy_name}!", min_delay=0.02, max_delay=0.08, newLine = True, vertical_padding = True)
+            if 0 < temporary_enemy_health:
+                slow_text_centered(f"{enemy_name.capitalize()} currently has {int(temporary_enemy_health)} health!\n", min_delay=0.02, max_delay=0.08, newLine = True, vertical_padding = False)
+            else:
+                slow_text_centered(f"{enemy_name.capitalize()} currently has 0 health!\n",min_delay=0.02, max_delay=0.08, newLine=True, vertical_padding=False)
+            reset_count()
+            time.sleep(3)
+            break
+        elif fight_choice == "Magic spell":
+            reset_count()
+            clear_screen()
+            if temporary_mana < 20:
+                slow_text_centered("You don't have enough mana it requires 20",min_delay=0.02, max_delay=0.08, newLine=True, vertical_padding=True)
+                time.sleep(3)
+                return temporary_player_health, temporary_enemy_health  # Breaks function to get user input again
+            if temporary_mana >= 20:
+                buff = int(temporary_damage)  + int((player["damage"] * 0.15))
+                temporary_mana -= 20
+                player["mana"] = temporary_mana
+                temporary_enemy_health -= buff
+                slow_text_centered(f"You dealt {buff} to {enemy_name}!", min_delay=0.02, max_delay=0.08,newLine=True, vertical_padding=True)
+                if 0 < temporary_enemy_health:
+                    slow_text_centered(f"{enemy_name.capitalize()} currently has {temporary_enemy_health} health!\n",min_delay=0.02, max_delay=0.08, newLine=True, vertical_padding=False)
+                else:
+                    slow_text_centered(f"{enemy_name.capitalize()} currently has 0 health!\n", min_delay=0.02,max_delay=0.08, newLine=True, vertical_padding=False)
+                break
+        elif fight_choice == "Menu":
+            reset_count()
+            menu_screen()
+            break
+        else:
+            print("Invalid choice")
+            invalid_attempts += 1
+        if invalid_attempts > MAX_INVALID_ATTEMPTS:
+                clear_screen()
+                slow_text_centered("I'm not that forgiving restart your game to retry", newLine = True, vertical_padding = True)
+                close()
+    if temporary_player_health >= 0 and temporary_enemy_health >= 0:
+        temporary_player_health -= temporary_enemy_damage
+        clear_screen()
+        slow_text_centered(f"{enemy_name} dealt {temporary_enemy_damage} to you!", min_delay=0.02, max_delay=0.08,newLine=True, vertical_padding=True)
+        if temporary_mana >= 0:
+            slow_text_centered(f"You currently have {temporary_player_health} health left!", min_delay=0.02, max_delay=0.08,newLine=True, vertical_padding=False)
+        else:
+            slow_text_centered(f"You currently have 0 health left!", min_delay=0.02,max_delay=0.08, newLine=True, vertical_padding=False)
+        health_check()
+        time.sleep(3)
+    return temporary_player_health,temporary_enemy_health # Breaks function and goes back to that original while loop that is making this battle run
 
+hub_boss = list(hostile.keys())[0]
+hub_boss_stats = copy.deepcopy(hostile["Slime"])
 
-hub_boss = list(enemy.keys())[0]
-hub_boss_stats = enemy["Slime"]
-
-slow_text_centered(f"You are being att  acked by a {hub_boss}", min_delay=0.02, max_delay=0.12, newLine = True, vertical_padding = True)
+slow_text_centered(f"You are being attacked by a {hub_boss}", min_delay=0.02, max_delay=0.12, newLine = True, vertical_padding = True)
 slow_text_centered("What would you like to do? ", min_delay=0.02, max_delay=0.12, newLine = True, vertical_padding = False)
 while hub_boss_stats["health"] > 0:
-    user_choice = input(">").lower().strip()
-    combat_system(enemy["Slime"], user_choice)
-    health_check()
-    if hub_boss_stats["health"] < 0:
+    user_choice = input(">").capitalize()
+    temporary_player_health, temporary_enemy_health = combat_system(hub_boss_stats, user_choice, hub_boss)
+    hub_boss_stats["health"] = temporary_enemy_health
+    player["health"] = temporary_player_health
+    if  temporary_enemy_health < 0:
         clear_screen()
         slow_text_centered(f"You have killed {hub_boss}!", min_delay=0.02, max_delay=0.08, newLine = True, vertical_padding = True)
+        health_refresh()
 
+time.sleep(5)
+print(player["mana"])

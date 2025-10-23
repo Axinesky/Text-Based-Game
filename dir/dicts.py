@@ -32,7 +32,7 @@ items = {
     }
 }
 
-enemy = {
+hostile = {
 
     "Slime": {
         "health": 70,
