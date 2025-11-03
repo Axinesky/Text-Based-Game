@@ -650,9 +650,9 @@ def hub():
             blacksmith_screen()
         if hub_choice == 'speak to locals':
             npc_screen()
-        if hub_choice == "Enter the Guild Hall":
+        if hub_choice == "enter the guild hall":
             guild_screen()
-        if hub_choice == "Enter the Dwarven Mines":
+        if hub_choice == "enter the dwarven mines":
             dwarven_screen()
 
         # Function for NPC screen
@@ -660,7 +660,6 @@ def hub():
             global hub_npc_choice
             clear_screen()
             slow_text_centered("Speak to Certi")
-            slow_text_centered("Speak to Ewan")
             slow_text_centered("Speak to Axinesky")
             slow_text_centered("Speak to Damian")
             hub_npc_choice = input("> ").lower().strip()
@@ -692,6 +691,27 @@ def hub():
                                    max_delay=0.08, newLine=True, vertical_padding=False)
                 slow_text_centered(f"Seriously now piss off i need to make the new update", min_delay=0.02,
                                    max_delay=0.08, newLine=True, vertical_padding=False)
+                time.sleep(5)
+                clear_screen()
+                slow_text_centered("Would you like to speak to another NPC?")
+                slow_text_centered("Yes")
+                slow_text_centered("No")
+                hub_choice_fallback = input("> ").lower().strip()
+                if hub_choice_fallback == "yes":
+                    npc_screen()
+                if hub_npc_choice == "no":
+                    hub_screen()
+            if hub_npc_choice == "speak to damian":
+                clear_screen()
+                slow_text_centered(f"hello {name}", min_delay=0.02, max_delay=0.08,
+                                   newLine=True, vertical_padding=True)
+                slow_text_centered(f"im damian i run a gambling establishment", min_delay=0.02, max_delay=0.08,
+                                   newLine=True, vertical_padding=False)
+                slow_text_centered(f"your a bit too broke to speak to me", min_delay=0.02,
+                                   max_delay=0.08, newLine=True, vertical_padding=False)
+                slow_text_centered(
+                    f"maybe come back after you gain some more dosh and make a fortune..",
+                    min_delay=0.02, max_delay=0.08, newLine=True, vertical_padding=False)
                 time.sleep(5)
                 clear_screen()
                 slow_text_centered("Would you like to speak to another NPC?")
@@ -799,6 +819,7 @@ def hub():
                                 slow_text_centered(f"You collected 15$", min_delay=0.02, max_delay=0.08,
                                                    newLine=True, vertical_padding=False)
                                 save_game()
+                                health_refresh()
                                 p_bal += 15
                     clear_screen()
                     slow_text_centered("You completed the quest, enjoy the rewards!")
@@ -824,7 +845,7 @@ def hub():
                                vertical_padding=False)
                 slow_text_centered("For now the next update will have some crazy bosses since your pretty stacked", min_delay=0.02, max_delay=0.08, newLine=True,
                                vertical_padding=False)
-                slow_text_centered(f"Thank you for playing Hyperia {name} remember the date 30/10/2025", min_delay=0.02, max_delay=0.08, newLine=True,
+                slow_text_centered(f"Thank you for playing Hyperia {name} remember the date 25/12/2025", min_delay=0.02, max_delay=0.08, newLine=True,
                                vertical_padding=False)
                 time.sleep(10)
                 close()
